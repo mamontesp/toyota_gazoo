@@ -1,0 +1,155 @@
+version: 2
+
+sources:
+  - name: indianapolis
+    description: Race data from Indianapolis Motor Speedway
+    meta:
+      track: Indianapolis Motor Speedway
+      location: Indianapolis, Indiana
+    
+    tables:
+      # Telemetry Data
+      - name: indianapolis_race_1_telemetry_data
+        description: Race 1 telemetry data with vehicle metrics
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/R1_indianapolis_motor_speedway_telemetry.csv"
+      
+      - name: indianapolis_race_2_telemetry_data
+        description: Race 2 telemetry data with vehicle metrics
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/R2_indianapolis_motor_speedway_telemetry.csv"
+      
+      # Lap Timing Data
+      - name: indianapolis_race_1_lap_time
+        description: Race 1 lap time records
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/R1_indianapolis_motor_speedway_lap_time.csv"
+      
+      - name: indianapolis_race_2_lap_time
+        description: Race 2 lap time records
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/R2_indianapolis_motor_speedway_lap_time.csv"
+      
+      - name: indianapolis_race_1_lap_start
+        description: Race 1 lap start timestamps
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/R1_indianapolis_motor_speedway_lap_start.csv"
+      
+      - name: indianapolis_race_2_lap_start
+        description: Race 2 lap start timestamps
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/R2_indianapolis_motor_speedway_lap_start.csv"
+      
+      - name: indianapolis_race_1_lap_end
+        description: Race 1 lap end timestamps
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/R1_indianapolis_motor_speedway_lap_end.csv"
+      
+      - name: indianapolis_race_2_lap_end
+        description: Race 2 lap end timestamps
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/R2_indianapolis_motor_speedway_lap_end.csv"
+      
+      # Race Results
+      - name: indianapolis_race_1_provisional_results
+        description: Race 1 provisional results
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/03_Provisional Results_Race 1.CSV"
+      
+      - name: indianapolis_race_2_provisional_results
+        description: Race 2 provisional results
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/03_Provisional Results_Race 2.CSV"
+      
+      - name: indianapolis_race_1_official_results
+        description: Race 1 official results (GR Cup)
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/03_GR Cup Race 1 Official Results.CSV"
+      
+      - name: indianapolis_race_2_official_results
+        description: Race 2 official results (GR Cup)
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/03_GR Cup Race 2 Official Results.CSV"
+      
+      # Results by Class
+      - name: indianapolis_race_1_results_by_class
+        description: Race 1 provisional results broken down by class
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/05_Provisional Results by Class_Race 1.CSV"
+      
+      - name: indianapolis_race_2_results_by_class
+        description: Race 2 provisional results broken down by class
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/05_Provisionals Results by Class_Race 2.CSV"
+      
+      - name: indianapolis_race_1_official_results_by_class
+        description: Race 1 official results by class (GR Cup)
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/05_GR Cup Race 1 Official Results by Class.CSV"
+      
+      - name: indianapolis_race_2_official_results_by_class
+        description: Race 2 official results by class (GR Cup)
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/05_GR Cup Race 2 Official Results by Class.CSV"
+      
+      # Analysis Data
+      - name: indianapolis_race_1_analysis_endurance
+        description: Race 1 endurance analysis with sector data
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/23_AnalysisEnduranceWithSections_Race 1.CSV"
+      
+      - name: indianapolis_race_2_analysis_endurance
+        description: Race 2 endurance analysis with sector data
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/23_AnalysisEnduranceWithSections_Race 2.CSV"
+      
+      # Weather Data
+      - name: indianapolis_race_1_weather
+        description: Race 1 weather conditions
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/26_Weather_Race 1.CSV"
+      
+      - name: indianapolis_race_2_weather
+        description: Race 2 weather conditions
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/26_Weather_Race 2.CSV"
+      
+      # Best Laps
+      - name: indianapolis_race_1_best_laps
+        description: Race 1 best 10 laps by driver
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/indianapolis/99_Best 10 Laps By Driver_Race 1.CSV"
+      
+      - name: indianapolis_race_2_best_laps
+        description: Race 2 best 10 laps by driver
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/indianapolis/99_Best 10 Laps By Driver_Race 2.CSV"
+      
+      # Championship Data
+      - name: indianapolis_drivers_championship
+        description: GR Drivers Championship standings
+        meta:
+          file_path: "{{ var('data_files_path') }}/indianapolis/GR Drivers Championship-1.csv"
+

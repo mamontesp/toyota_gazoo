@@ -1,0 +1,157 @@
+version: 2
+
+sources:
+  - name: barber
+    description: Race data from Barber Motorsports Park
+    meta:
+      track: Barber Motorsports Park
+      location: Birmingham, Alabama
+    
+    tables:
+      # Telemetry Data
+      - name: barber_race_1_telemetry_data
+        description: Race 1 telemetry data with vehicle metrics
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R1_barber_telemetry_data.csv"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_telemetry_data
+        description: Race 2 telemetry data with vehicle metrics
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R2_barber_telemetry_data.csv"
+        meta:
+          race: 2
+      
+      # Lap Timing Data
+      - name: barber_race_1_lap_time
+        description: Race 1 lap time records
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R1_barber_lap_time.csv"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_lap_time
+        description: Race 2 lap time records
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R2_barber_lap_time.csv"
+        meta:
+          race: 2
+      
+      - name: barber_race_1_lap_start
+        description: Race 1 lap start timestamps
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R1_barber_lap_start.csv"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_lap_start
+        description: Race 2 lap start timestamps
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R2_barber_lap_start.csv"
+        meta:
+          race: 2
+      
+      - name: barber_race_1_lap_end
+        description: Race 1 lap end timestamps
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R1_barber_lap_end.csv"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_lap_end
+        description: Race 2 lap end timestamps
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/R2_barber_lap_end.csv"
+        meta:
+          race: 2
+      
+      # Race Results
+      - name: barber_race_1_provisional_results
+        description: Race 1 provisional results
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/03_Provisional Results_Race 1_Anonymized.CSV"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_provisional_results
+        description: Race 2 provisional results
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/03_Provisional Results_Race 2_Anonymized.CSV"
+        meta:
+          race: 2
+      
+      - name: barber_race_2_official_results
+        description: Race 2 official results (GR Cup)
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/03_Results GR Cup Race 2 Official_Anonymized.CSV"
+        meta:
+          race: 2
+      
+      # Results by Class
+      - name: barber_race_1_results_by_class
+        description: Race 1 provisional results broken down by class
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/05_Provisional Results by Class_Race 1_Anonymized.CSV"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_results_by_class
+        description: Race 2 provisional results broken down by class
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/05_Provisional Results by Class_Race 2_Anonymized.CSV"
+        meta:
+          race: 2
+      
+      - name: barber_race_1_official_results_by_class
+        description: Race 1 official results by class (GR Cup)
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/05_Results by Class GR Cup Race 1 Official_Anonymized.CSV"
+        meta:
+          race: 1
+      
+      # Analysis Data
+      - name: barber_race_1_analysis_endurance
+        description: Race 1 endurance analysis with sector data
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/23_AnalysisEnduranceWithSections_Race 1_Anonymized.CSV"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_analysis_endurance
+        description: Race 2 endurance analysis with sector data
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/23_AnalysisEnduranceWithSections_Race 2_Anonymized.CSV"
+        meta:
+          race: 2
+      
+      # Weather Data
+      - name: barber_race_1_weather
+        description: Race 1 weather conditions
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/26_Weather_Race 1_Anonymized.CSV"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_weather
+        description: Race 2 weather conditions
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/26_Weather_Race 2_Anonymized.CSV"
+        meta:
+          race: 2
+      
+      # Best Laps
+      - name: barber_race_1_best_laps
+        description: Race 1 best 10 laps by driver
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/99_Best 10 Laps By Driver_Race 1_Anonymized.CSV"
+        meta:
+          race: 1
+      
+      - name: barber_race_2_best_laps
+        description: Race 2 best 10 laps by driver
+        config:
+          external_location: "{{ var('data_files_path') }}/barber/99_Best 10 Laps By Driver_Race 2_Anonymized.CSV"
+        meta:
+          race: 2
+

@@ -1,0 +1,149 @@
+version: 2
+
+sources:
+  - name: road_america
+    description: Race data from Road America
+    meta:
+      track: Road America
+      location: Elkhart Lake, Wisconsin
+    
+    tables:
+      # Telemetry Data
+      - name: road_america_race_1_telemetry_data
+        description: Race 1 telemetry data with vehicle metrics
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/R1_road_america_telemetry_data.csv"
+      
+      - name: road_america_race_2_telemetry_data
+        description: Race 2 telemetry data with vehicle metrics
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/R2_road_america_telemetry_data.csv"
+      
+      # Lap Timing Data
+      - name: road_america_race_1_lap_time
+        description: Race 1 lap time records
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/road_america_lap_time_R1.csv"
+      
+      - name: road_america_race_2_lap_time
+        description: Race 2 lap time records
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/road_america_lap_time_R2.csv"
+      
+      - name: road_america_race_1_lap_start
+        description: Race 1 lap start timestamps
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/road_america_lap_start_R1.csv"
+      
+      - name: road_america_race_2_lap_start
+        description: Race 2 lap start timestamps
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/road_america_lap_start_R2.csv"
+      
+      - name: road_america_race_1_lap_end
+        description: Race 1 lap end timestamps
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/road_america_lap_end_R1.csv"
+      
+      - name: road_america_race_2_lap_end
+        description: Race 2 lap end timestamps
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/road_america_lap_end_R2.csv"
+      
+      # Race Results
+      - name: road_america_race_1_provisional_results
+        description: Race 1 provisional results
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/03_Provisional Results_Race 1_Anonymized.CSV"
+      
+      - name: road_america_race_2_provisional_results
+        description: Race 2 provisional results
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/03_Provisional Results_Race 2_Anonymized.CSV"
+      
+      - name: road_america_race_1_official_results
+        description: Race 1 official results (GR Cup)
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/03_Results GR Cup Race 1 Official1_Anonymized.CSV"
+      
+      - name: road_america_race_2_official_results
+        description: Race 2 official results (GR Cup)
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/03_Results GR Cup Race 2 Official_Anonymized.CSV"
+      
+      # Results by Class
+      - name: road_america_race_1_results_by_class
+        description: Race 1 provisional results broken down by class
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/05_Provisional Results by Class_Race 1_Anonymized.CSV"
+      
+      - name: road_america_race_2_results_by_class
+        description: Race 2 provisional results broken down by class
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/05_Provisional Results by Class_Race 2_Anonymized.CSV"
+      
+      - name: road_america_race_1_official_results_by_class
+        description: Race 1 official results by class (GR Cup)
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/05_Results by Class GR Cup Race 1 Official_Anonymized.CSV"
+      
+      - name: road_america_race_2_official_results_by_class
+        description: Race 2 official results by class (GR Cup)
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/05_Results by Class GR Cup Race 2 Official_Anonymized.CSV"
+      
+      # Analysis Data
+      - name: road_america_race_1_analysis_endurance
+        description: Race 1 endurance analysis with sector data
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/23_AnalysisEnduranceWithSections_Race 1_Anonymized.CSV"
+      
+      - name: road_america_race_2_analysis_endurance
+        description: Race 2 endurance analysis with sector data
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/23_AnalysisEnduranceWithSections_Race 2_Anonymized.CSV"
+      
+      # Weather Data
+      - name: road_america_race_1_weather
+        description: Race 1 weather conditions
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/26_Weather_Race 1_Anonymized.CSV"
+      
+      - name: road_america_race_2_weather
+        description: Race 2 weather conditions
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/26_Weather_Race 2_Anonymized.CSV"
+      
+      # Best Laps
+      - name: road_america_race_1_best_laps
+        description: Race 1 best 10 laps by driver
+        meta:
+          race: 1
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 1/99_Best 10 Laps By Driver_Race 1_Anonymized.CSV"
+      
+      - name: road_america_race_2_best_laps
+        description: Race 2 best 10 laps by driver
+        meta:
+          race: 2
+          file_path: "{{ var('data_files_path') }}/road-america/Road America/Race 2/99_Best 10 Laps By Driver_Race 2_Anonymized.CSV"
+

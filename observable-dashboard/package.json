@@ -1,0 +1,17 @@
+{
+  "name": "observable-dashboard",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "observable preview",
+    "build": "observable build",
+    "deploy": "observable deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Toyota Gazoo Racing Analytics Dashboard",
+  "devDependencies": {
+    "@observablehq/framework": "^1.13.3"
+  }
+}

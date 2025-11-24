@@ -1,0 +1,47 @@
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'toyota_gazoo'
+version: '1.0.0'
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'toyota_gazoo'
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models", "sources"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+models:
+  toyota_gazoo:
+    # Config indicated by + and applies to all files under models/staging/
+    1_raw:
+      +materialized: view
+      +schema: raw
+    
+    # Config for intermediate models
+    2_intermediate:
+      +materialized: view
+      +schema: intermediate
+    
+    # Config for mart models  
+    3_marts:
+      +materialized: table
+      +schema: marts
+
+# Use Snowflake syntax for SQL
+flags:
+  send_anonymous_usage_stats: false
+
+# Variables
+vars:
+  data_files_path: 'data_files'
+
