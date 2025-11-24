@@ -23,6 +23,5 @@ Thumbs.db
 
 # Data files - ignore CSV files except in barber
 data_files/**/*.csv
-!data_files/barber/**/*.csv
 data_files/track_maps/
 data_files/zip/
