@@ -5,24 +5,30 @@ WITH
 -- Base telemetry events scoped to laps with lap distance metadata
 base_events AS (
     SELECT
-        circuit,
-        race_number,
-        vehicle_id,
-        vehicle_number,
-        outing,
-        lap,
-        event_timestamp,
-        laptrigger_lapdist_dls,
-        event_source,
-        speed,
-        gear,
-        aps,
-        steering_angle,
-        front_brake_pressure,
-        rear_brake_pressure
-    FROM dev.main_marts.fact_telemetry_data
-    WHERE lap IS NOT NULL
-      AND laptrigger_lapdist_dls IS NOT NULL
+        fact.circuit,
+        fact.race_number,
+        fact.vehicle_id,
+        fact.vehicle_number,
+        fact.outing,
+        fact.lap,
+        fact.event_timestamp,
+        fact.laptrigger_lapdist_dls,
+        sector.meter_position_m,
+        fact.event_source,
+        fact.speed,
+        fact.gear,
+        fact.aps,
+        fact.steering_angle,
+        fact.front_brake_pressure,
+        fact.rear_brake_pressure,
+        sector.sector_number,
+        sector.sector_name,
+        sector.sector_length_m
+    FROM dev.main_marts.fact_telemetry_data AS fact
+    LEFT JOIN dev.main_marts.dim_track_sectors AS sector
+        ON FLOOR(fact.laptrigger_lapdist_dls) = sector.meter_position_m
+    WHERE fact.lap IS NOT NULL
+      AND fact.laptrigger_lapdist_dls IS NOT NULL
 ),
 -- Rank events within each driver lap to compare ordered maneuvers
 ranked_events AS (
@@ -35,6 +41,10 @@ ranked_events AS (
         lap,
         event_timestamp,
         laptrigger_lapdist_dls,
+        meter_position_m,
+        sector_number,
+        sector_name,
+        sector_length_m,
         event_source,
         speed,
         gear,
@@ -57,7 +67,7 @@ driver_event_source_counts AS (
         circuit,
         vehicle_id,
         vehicle_number,
-        event_order,
+        meter_position_m,
         event_source,
         COUNT(*) AS event_instances,
         COUNT(DISTINCT lap) AS laps_with_event
@@ -70,26 +80,26 @@ driver_event_signature AS (
         circuit,
         vehicle_id,
         vehicle_number,
-        event_order,
+        meter_position_m,
         event_source AS signature_event_source,
         event_instances,
         laps_with_event,
         event_instances / NULLIF(SUM(event_instances) OVER (
-            PARTITION BY circuit, vehicle_id, event_order
+            PARTITION BY circuit, vehicle_id, meter_position_m
         ), 0) AS signature_event_share,
         ROW_NUMBER() OVER (
-            PARTITION BY circuit, vehicle_id, event_order
+            PARTITION BY circuit, vehicle_id, meter_position_m
             ORDER BY event_instances DESC, event_source
         ) AS signature_rank
     FROM driver_event_source_counts
     QUALIFY signature_rank = 1
 ),
--- Summarize telemetry metrics per driver sequence step
-driver_order_metrics AS (
+-- Summarize telemetry metrics per driver meter position
+driver_meter_metrics AS (
     SELECT
         circuit,
         vehicle_id,
-        event_order,
+        meter_position_m,
         AVG(laptrigger_lapdist_dls) AS avg_laptrigger_lapdist_dls,
         STDDEV_POP(laptrigger_lapdist_dls) AS laptrigger_variability,
         AVG(speed) AS avg_speed,
@@ -103,7 +113,7 @@ driver_order_metrics AS (
         AVG(front_brake_pressure) AS avg_front_brake_pressure,
         STDDEV_POP(front_brake_pressure) AS front_brake_variability,
         AVG(rear_brake_pressure) AS avg_rear_brake_pressure,
-        STDDEV_POP(rear_brake_pressure) AS rear_brake_variability,
+        STDDEV_POP(rear_brake_pressure) AS avg_rear_brake_variability,
         COUNT(DISTINCT lap) AS laps_covered
     FROM ranked_events
     GROUP BY 1, 2, 3
@@ -120,6 +130,7 @@ lap_event_alignment AS (
         r.event_order,
         r.event_source,
         r.laptrigger_lapdist_dls,
+        r.meter_position_m,
         r.speed,
         r.gear,
         r.aps,
@@ -127,6 +138,9 @@ lap_event_alignment AS (
         r.front_brake_pressure,
         r.rear_brake_pressure,
         r.events_per_lap,
+        r.sector_number,
+        r.sector_name,
+        r.sector_length_m,
         sig.signature_event_source,
         sig.signature_event_share,
         metrics.avg_laptrigger_lapdist_dls,
@@ -143,11 +157,11 @@ lap_event_alignment AS (
     INNER JOIN driver_event_signature AS sig
         ON r.circuit = sig.circuit
        AND r.vehicle_id = sig.vehicle_id
-       AND r.event_order = sig.event_order
-    INNER JOIN driver_order_metrics AS metrics
+      AND r.meter_position_m = sig.meter_position_m
+    INNER JOIN driver_meter_metrics AS metrics
         ON r.circuit = metrics.circuit
        AND r.vehicle_id = metrics.vehicle_id
-       AND r.event_order = metrics.event_order
+       AND r.meter_position_m = metrics.meter_position_m
 ),
 -- Aggregate lap-level consistency metrics
 lap_consistency AS (
@@ -197,7 +211,10 @@ meter_maneuver_change AS (
         circuit,
         vehicle_id,
         vehicle_number,
-        FLOOR(laptrigger_lapdist_dls) AS meter_position_m,
+        meter_position_m,
+        sector_number,
+        sector_name,
+        MAX(sector_length_m) AS sector_length_m,
         COUNT(*) AS evaluated_events,
         COUNT(DISTINCT outing) AS outings_covered,
         COUNT(DISTINCT lap) AS laps_covered,
@@ -217,13 +234,16 @@ meter_maneuver_change AS (
         STDDEV_POP(front_brake_pressure) AS front_brake_stddev,
         STDDEV_POP(rear_brake_pressure) AS rear_brake_stddev
     FROM lap_event_alignment
-    GROUP BY 1, 2, 3, 4
+    GROUP BY 1, 2, 3, 4, 5, 6
 )
 SELECT
     meter.circuit,
     meter.vehicle_number,
     meter.vehicle_id,
     meter.meter_position_m,
+    meter.sector_number,
+    meter.sector_name,
+    meter.sector_length_m,
     meter.laps_covered,
     meter.outings_covered,
     meter.evaluated_events,

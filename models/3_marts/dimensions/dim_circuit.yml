@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: dim_circuit
+    description: |
+      Static meter-level spine for the 2.28 mile circuit. The model is a full-refresh
+      table (not incremental) regenerated from the hard-coded sector distances expressed
+      in inches and converted to meters during processing. Each record reflects the
+      latest available representation of the circuit layout and is regenerated in full
+      on each run.
+
+      Example: meter 1500 is assigned to Sector 2 because it falls within the segment
+      accumulated from the sector distances.
+    columns:
+      - name: meter_position_m
+        description: |
+          Integer meter marker generated from the circuit spine. Derived via Snowflake
+          generator; represents the latest meter boundary as of the full rebuild.
+        tests:
+          - not_null
+      - name: sector_number
+        description: |
+          Ordinal identifier for the sector. Derived from the static sector ordering
+          used to define the track; passthrough from the hard-coded sector metadata.
+        tests:
+          - not_null
+      - name: sector_code
+        description: |
+          Machine-friendly code for the sector. Passthrough from the hard-coded sector
+          metadata and stable across model rebuilds.
+        tests:
+          - not_null
+      - name: sector_name
+        description: |
+          Human-readable name for the sector. Passthrough from the hard-coded sector
+          metadata and represents the latest naming convention.
+        tests:
+          - not_null
+      - name: sector_start_distance_m
+        description: |
+          Meter value (in meters) marking the inclusive start of the sector range. Derived
+          from cumulative sector distances in meters; recalculated each run so it contains
+          the latest available boundary.
+        tests:
+          - not_null
+      - name: sector_end_distance_m
+        description: |
+          Meter value (in meters) marking the exclusive end of the sector range. Derived
+          from cumulative sector distances in meters; recalculated each run so it contains
+          the latest available boundary.
+        tests:
+          - not_null
+      - name: sector_length_m
+        description: |
+          Length of the sector in meters. Calculated as sector_end_distance_m minus
+          sector_start_distance_m; represents the latest sector length on each rebuild.
+        tests:
+          - not_null
+
