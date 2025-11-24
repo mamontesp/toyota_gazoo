@@ -133,8 +133,8 @@ const lapSummaryQuery = `
     -- Aggregate weather context for the active filters
     weather_snapshot AS (
       SELECT
-        AVG(lap_mean_air_temp_celsius) AS mean_air_temp_f,
-        AVG(lap_mean_track_temp_celsius) AS mean_track_temp_f,
+        AVG(lap_mean_air_temp_celsius) AS mean_air_temp_c,
+        AVG(lap_mean_track_temp_celsius) AS mean_track_temp_c,
         AVG(lap_mean_humidity_percentage) AS mean_humidity_pct,
         AVG(lap_mean_pressure_inches) AS mean_pressure_in
       FROM database.main_marts.fact_laps
@@ -145,8 +145,8 @@ const lapSummaryQuery = `
     avg_lap_duration_seconds,
     fastest_lap_seconds,
     slowest_lap_seconds,
-    mean_air_temp_f,
-    mean_track_temp_f,
+    mean_air_temp_c,
+    mean_track_temp_c,
     mean_humidity_pct,
     mean_pressure_in
   FROM lap_summary
@@ -160,8 +160,8 @@ const lapSummary =
     avg_lap_duration_seconds: null,
     fastest_lap_seconds: null,
     slowest_lap_seconds: null,
-    mean_air_temp_f: null,
-    mean_track_temp_f: null,
+    mean_air_temp_c: null,
+    mean_track_temp_c: null,
     mean_humidity_pct: null,
     mean_pressure_in: null
   };
@@ -206,11 +206,11 @@ html`<div class="grid grid-cols-4" style="gap:1rem;margin-bottom:1.5rem;">
 ```js
 html`<div class="grid grid-cols-4" style="gap:1rem;margin-bottom:1.5rem;">
   <div class="card">
-    <h3>${formatMetric(lapSummary.mean_track_temp_f, 1, "°F")}</h3>
+    <h3>${formatMetric(lapSummary.mean_track_temp_c, 1, "°C")}</h3>
     <p>Mean Track Temp</p>
   </div>
   <div class="card">
-    <h3>${formatMetric(lapSummary.mean_air_temp_f, 1, "°F")}</h3>
+    <h3>${formatMetric(lapSummary.mean_air_temp_c, 1, "°C")}</h3>
     <p>Mean Air Temp</p>
   </div>
   <div class="card">
@@ -306,12 +306,12 @@ const temperatureSeries = lapDetails
   .flatMap((d) => [
     {
       lap: d.lap,
-      metric: "Track Temp (°F)",
+      metric: "Track Temp (°C)",
       value: d.lap_mean_track_temp_celsius
     },
     {
       lap: d.lap,
-      metric: "Air Temp (°F)",
+      metric: "Air Temp (°C)",
       value: d.lap_mean_air_temp_celsius
     }
   ])
@@ -324,7 +324,7 @@ if (temperatureSeries.length > 0) {
       width: 1000,
       height: 400,
       x: {label: "Metric", grid: true},
-      y: {label: "Temperature (°F)", grid: true},
+      y: {label: "Temperature (°C)", grid: true},
       color: {legend: true, label: "Metric"},
       marks: [
         Plot.boxY(temperatureSeries, {
@@ -378,79 +378,105 @@ if (humiditySeries.length > 0) {
 }
 ```
 
-## Lap Detail Table
+## Best Lap per Driver
 
 ```js
-if (lapDetails.length > 0) {
-  const lapTimingTableData = lapDetails.map((d) => ({
-    lap: d.lap,
-    lap_duration_seconds: d.lap_duration_seconds,
-    lap_start_timestamp_utc: d.lap_start_timestamp_utc,
-    lap_end_timestamp_utc: d.lap_end_timestamp_utc
-  }));
+const bestLapQuery = `
+  WITH
+    -- Find the best lap time per vehicle/driver
+    best_laps AS (
+      SELECT
+        vehicle_id,
+        vehicle_number,
+        circuit,
+        race_number,
+        MIN(lap_duration_seconds) AS best_lap_duration_seconds
+      FROM database.main_marts.fact_laps
+      WHERE ${filterConditions}
+        AND lap_duration_seconds IS NOT NULL
+      GROUP BY vehicle_id, vehicle_number, circuit, race_number
+    ),
+    -- Get the lap number where the best time occurred
+    best_lap_details AS (
+      SELECT
+        laps.vehicle_id,
+        laps.vehicle_number,
+        laps.circuit,
+        laps.race_number,
+        laps.lap,
+        laps.lap_duration_seconds,
+        laps.lap_start_timestamp_utc,
+        best.best_lap_duration_seconds
+      FROM database.main_marts.fact_laps AS laps
+      INNER JOIN best_laps AS best
+        ON laps.vehicle_id = best.vehicle_id
+        AND laps.vehicle_number = best.vehicle_number
+        AND laps.circuit = best.circuit
+        AND laps.race_number = best.race_number
+        AND laps.lap_duration_seconds = best.best_lap_duration_seconds
+      WHERE ${filterConditions}
+        AND laps.lap_duration_seconds IS NOT NULL
+      QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY laps.vehicle_id, laps.vehicle_number, laps.circuit, laps.race_number
+        ORDER BY laps.lap
+      ) = 1
+    )
+  SELECT
+    vehicle_id,
+    vehicle_number,
+    circuit,
+    race_number,
+    lap AS best_lap,
+    best_lap_duration_seconds,
+    lap_start_timestamp_utc
+  FROM best_lap_details
+  ORDER BY best_lap_duration_seconds ASC
+`;
 
+const bestLapResult = await db.query(bestLapQuery);
+const bestLapData = Array.from(bestLapResult);
+```
+
+```js
+if (bestLapData.length > 0) {
   display(
-    html`<h3 style="margin-top:1.5rem;">Lap Timing Details</h3>`
+    html`<h3 style="margin-top:1.5rem;">Best Lap per Driver</h3>`
   );
 
-  const lapTimingTable = Inputs.table(lapTimingTableData, {
+  const bestLapTable = Inputs.table(bestLapData, {
     columns: [
-      "lap",
-      "lap_duration_seconds",
-      "lap_start_timestamp_utc",
-      "lap_end_timestamp_utc"
+      "vehicle_id",
+      "vehicle_number",
+      "circuit",
+      "race_number",
+      "best_lap",
+      "best_lap_duration_seconds",
+      "lap_start_timestamp_utc"
     ],
     header: {
-      lap: "Lap",
-      lap_duration_seconds: "Lap Duration (s)",
-      lap_start_timestamp_utc: "Start UTC",
-      lap_end_timestamp_utc: "End UTC"
+      vehicle_id: "Vehicle ID",
+      vehicle_number: "Vehicle #",
+      circuit: "Circuit",
+      race_number: "Race",
+      best_lap: "Best Lap #",
+      best_lap_duration_seconds: "Best Time (s)",
+      lap_start_timestamp_utc: "Lap Start Time"
     },
     format: {
-      lap_duration_seconds: (d) => (d != null ? d.toFixed(3) : "N/A")
+      best_lap_duration_seconds: (d) => (d != null ? d.toFixed(3) : "N/A"),
+      lap_start_timestamp_utc: (d) => d != null ? new Date(d).toLocaleString() : "N/A"
     },
-    rows: 20
+    rows: 50,
+    sort: "best_lap_duration_seconds"
   });
 
-  display(html`<div class="lap-table-wrapper">${lapTimingTable}</div>`);
-
-  const lapWeatherTableData = lapDetails.map((d) => ({
-    lap: d.lap,
-    lap_mean_track_temp_celsius: d.lap_mean_track_temp_celsius,
-    lap_mean_air_temp_celsius: d.lap_mean_air_temp_celsius,
-    lap_mean_humidity_percentage: d.lap_mean_humidity_percentage,
-    lap_mean_pressure_inches: d.lap_mean_pressure_inches
-  }));
-
+  display(html`<div class="lap-table-wrapper">${bestLapTable}</div>`);
+} else {
   display(
-    html`<h3 style="margin-top:1.5rem;">Lap Weather Snapshot</h3>`
+    html`<div style="background:#fff3cd;padding:1rem;border-radius:8px;border:1px solid #ffeeba;margin-top:1.5rem;">
+      ⚠️ No lap data available for the selected filters.
+    </div>`
   );
-
-  const lapWeatherTable = Inputs.table(lapWeatherTableData, {
-    columns: [
-      "lap",
-      "lap_mean_track_temp_celsius",
-      "lap_mean_air_temp_celsius",
-      "lap_mean_humidity_percentage",
-      "lap_mean_pressure_inches"
-    ],
-    header: {
-      lap: "Lap",
-      lap_mean_track_temp_celsius: "Track Temp (°C)",
-      lap_mean_air_temp_celsius: "Air Temp (°C)",
-      lap_mean_humidity_percentage: "Humidity (%)",
-      lap_mean_pressure_inches: "Pressure (inHg)"
-    },
-    format: {
-      lap_mean_track_temp_celsius: (d) => (d != null ? d.toFixed(1) : "N/A"),
-      lap_mean_air_temp_celsius: (d) => (d != null ? d.toFixed(1) : "N/A"),
-      lap_mean_humidity_percentage: (d) => (d != null ? d.toFixed(1) : "N/A"),
-      lap_mean_pressure_inches: (d) => (d != null ? d.toFixed(3) : "N/A")
-    },
-    rows: 20
-  });
-
-  display(html`<div class="lap-table-wrapper">${lapWeatherTable}</div>`);
 }
 ```
 

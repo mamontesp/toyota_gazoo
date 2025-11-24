@@ -89,6 +89,7 @@ display(Inputs.table(recentRaces, {
 ## Navigation
 
 - [Telemetry Analysis](/telemetry) - Detailed telemetry data visualization
+- [Driver Consistency Histograms](/driver-consistency) - Histogram view of telemetry metrics across track sectors
 - [Race Analysis](/race-analysis) - Race performance metrics and comparisons
 - [Lap Insights](/lap-insights) - Lap durations with weather context
 - [Wind Conditions](/fact-wind) - Wind speed and direction snapshots by race

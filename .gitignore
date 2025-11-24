@@ -21,7 +21,6 @@ env/
 .DS_Store
 Thumbs.db
 
-# Data files (keep barber)
-data_files/*
-!data_files/barber/
-!data_files/barber/**
+# Data files - ignore CSV files except in barber
+data_files/**/*.csv
+!data_files/barber/**/*.csv

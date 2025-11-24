@@ -155,17 +155,20 @@ table tbody tr:last-child td {
 
 .lap-table-wrapper {
   max-height: 520px;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
   border: 1px solid var(--theme-border);
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 .lap-table-wrapper table {
   border-collapse: collapse;
   width: 100%;
-  min-width: 640px;
+  min-width: max-content;
+  table-layout: auto;
 }
 
 .lap-table-wrapper thead th {
@@ -177,6 +180,8 @@ table tbody tr:last-child td {
   top: 0;
   text-align: left;
   z-index: 1;
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 .lap-table-wrapper tbody td {
@@ -230,6 +235,26 @@ select:focus {
   outline: none;
   border-color: var(--theme-accent);
   box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+}
+
+/* Observable slider outputs */
+label.observablehq--label output,
+label.observablehq--label input[type="number"],
+label.observablehq--form-field output,
+label.observablehq--form-field input[type="number"],
+.observablehq--inspect {
+  background-color: #ffffff !important;
+  color: #111111 !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 4px !important;
+  padding: 0.15rem 0.55rem !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+label.observablehq--label input[type="range"],
+label.observablehq--form-field input[type="range"] {
+  accent-color: var(--theme-accent);
 }
 
 /* Debug output styling */
